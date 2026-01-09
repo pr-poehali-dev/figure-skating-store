@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -83,6 +84,7 @@ const products: Product[] = [
 const categories = ['Все', 'Костюмы', 'Платья', 'Термобельё', 'Аксессуары', 'Защита'];
 
 const Index = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('Все');
   const [cart, setCart] = useState<Product[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -247,8 +249,9 @@ const Index = () => {
             {filteredProducts.map((product, index) => (
               <Card 
                 key={product.id} 
-                className="overflow-hidden hover:shadow-xl transition-shadow duration-300 animate-scale-in"
+                className="overflow-hidden hover:shadow-xl transition-shadow duration-300 animate-scale-in cursor-pointer"
                 style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => navigate(`/product?id=${product.id}`)}
               >
                 <CardHeader className="p-0 relative">
                   <img 
@@ -260,7 +263,10 @@ const Index = () => {
                     size="icon"
                     variant="secondary"
                     className="absolute top-3 right-3 rounded-full"
-                    onClick={() => toggleFavorite(product.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(product.id);
+                    }}
                   >
                     <Icon 
                       name="Heart" 
@@ -297,7 +303,10 @@ const Index = () => {
                 <CardFooter className="p-6 pt-0 flex gap-2">
                   <Button 
                     className="flex-1" 
-                    onClick={() => addToCart(product)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCart(product);
+                    }}
                   >
                     <Icon name="ShoppingCart" size={18} className="mr-2" />
                     В корзину
