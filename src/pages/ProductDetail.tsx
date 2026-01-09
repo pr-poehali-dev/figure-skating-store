@@ -1,12 +1,9 @@
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import Icon from '@/components/ui/icon';
+import { useSearchParams } from 'react-router-dom';
+import ProductHeader from '@/components/product/ProductHeader';
+import ProductImageSection from '@/components/product/ProductImageSection';
+import ProductInfo from '@/components/product/ProductInfo';
+import ProductReviewsSection from '@/components/product/ProductReviewsSection';
 
 type Review = {
   id: number;
@@ -213,7 +210,6 @@ const reviewsData: { [key: number]: Review[] } = {
 };
 
 const ProductDetail = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const productId = parseInt(searchParams.get('id') || '1');
   
@@ -230,233 +226,29 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Button variant="ghost" onClick={() => navigate('/')}>
-              <Icon name="ArrowLeft" size={20} className="mr-2" />
-              Назад к каталогу
-            </Button>
-            
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                <span className="text-2xl">⛸️</span>
-              </div>
-              <h1 className="text-2xl font-heading font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                FigureShop
-              </h1>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon">
-                <Icon name="ShoppingCart" size={24} />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Icon name="User" size={24} />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <ProductHeader />
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
-          <div className="animate-fade-in">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img 
-                src={product.image} 
-                alt={product.name} 
-                className="w-full h-[600px] object-cover"
-              />
-              <Badge className="absolute top-4 left-4 bg-primary text-lg px-4 py-2">
-                {product.category}
-              </Badge>
-            </div>
-          </div>
+          <ProductImageSection 
+            image={product.image}
+            name={product.name}
+            category={product.category}
+          />
 
-          <div className="animate-slide-up space-y-6">
-            <div>
-              <h1 className="text-4xl font-heading font-bold mb-4">{product.name}</h1>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Icon 
-                      key={i} 
-                      name="Star" 
-                      size={24} 
-                      className={i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
-                    />
-                  ))}
-                </div>
-                <span className="text-muted-foreground">
-                  {product.rating} ({product.reviews} отзывов)
-                </span>
-              </div>
-              <p className="text-5xl font-heading font-bold text-primary mb-6">
-                {product.price.toLocaleString()} ₽
-              </p>
-            </div>
-
-            <Separator />
-
-            <div>
-              <h3 className="font-semibold text-lg mb-3">Описание</h3>
-              <p className="text-muted-foreground leading-relaxed">{product.fullDescription}</p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg mb-3">Размер</h3>
-              <div className="flex gap-2">
-                {product.sizes.map(size => (
-                  <Button
-                    key={size}
-                    variant={selectedSize === size ? 'default' : 'outline'}
-                    onClick={() => setSelectedSize(size)}
-                    className="min-w-[60px]"
-                  >
-                    {size}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg mb-3">Цвет</h3>
-              <div className="flex gap-2">
-                {product.colors.map(color => (
-                  <Button
-                    key={color}
-                    variant={selectedColor === color ? 'default' : 'outline'}
-                    onClick={() => setSelectedColor(color)}
-                  >
-                    {color}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg mb-3">Особенности</h3>
-              <ul className="space-y-2">
-                {product.features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-2">
-                    <Icon name="Check" size={20} className="text-primary" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="flex gap-4">
-              <Button 
-                size="lg" 
-                className="flex-1"
-                onClick={handleAddToCart}
-              >
-                <Icon name="ShoppingCart" size={20} className="mr-2" />
-                Добавить в корзину
-              </Button>
-              <Button 
-                size="lg" 
-                variant={isFavorite ? 'default' : 'outline'}
-                onClick={() => setIsFavorite(!isFavorite)}
-              >
-                <Icon 
-                  name="Heart" 
-                  size={20} 
-                  className={isFavorite ? 'fill-current' : ''}
-                />
-              </Button>
-            </div>
-          </div>
+          <ProductInfo
+            product={product}
+            selectedSize={selectedSize}
+            selectedColor={selectedColor}
+            isFavorite={isFavorite}
+            onSizeChange={setSelectedSize}
+            onColorChange={setSelectedColor}
+            onToggleFavorite={() => setIsFavorite(!isFavorite)}
+            onAddToCart={handleAddToCart}
+          />
         </div>
 
-        <Card className="animate-fade-in">
-          <CardContent className="p-8">
-            <Tabs defaultValue="reviews">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="reviews">
-                  Отзывы ({productReviews.length})
-                </TabsTrigger>
-                <TabsTrigger value="delivery">
-                  Доставка и оплата
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="reviews" className="space-y-6">
-                {productReviews.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">
-                    Пока нет отзывов. Будьте первым!
-                  </p>
-                ) : (
-                  productReviews.map(review => (
-                    <div key={review.id} className="border-b pb-6 last:border-0">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="w-12 h-12">
-                          <AvatarFallback className="bg-primary text-primary-foreground">
-                            {review.author.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <div>
-                              <h4 className="font-semibold">{review.author}</h4>
-                              <p className="text-sm text-muted-foreground">{review.date}</p>
-                            </div>
-                            {review.verified && (
-                              <Badge variant="secondary" className="gap-1">
-                                <Icon name="CheckCircle" size={14} />
-                                Проверенная покупка
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex mb-2">
-                            {[...Array(5)].map((_, i) => (
-                              <Icon 
-                                key={i} 
-                                name="Star" 
-                                size={16} 
-                                className={i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
-                              />
-                            ))}
-                          </div>
-                          <p className="text-muted-foreground">{review.text}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </TabsContent>
-
-              <TabsContent value="delivery" className="space-y-4">
-                <div>
-                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                    <Icon name="Truck" size={24} className="text-primary" />
-                    Доставка
-                  </h3>
-                  <ul className="space-y-2 text-muted-foreground">
-                    <li>• Доставка по Москве — 1-2 дня (бесплатно от 5000 ₽)</li>
-                    <li>• Доставка по России — 3-7 дней (от 500 ₽)</li>
-                    <li>• Самовывоз из магазина — бесплатно</li>
-                  </ul>
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                    <Icon name="CreditCard" size={24} className="text-primary" />
-                    Оплата
-                  </h3>
-                  <ul className="space-y-2 text-muted-foreground">
-                    <li>• Банковская карта онлайн</li>
-                    <li>• Наличными курьеру</li>
-                    <li>• Банковский перевод</li>
-                    <li>• Рассрочка от банков-партнёров</li>
-                  </ul>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+        <ProductReviewsSection reviews={productReviews} />
       </div>
 
       <footer className="bg-gray-900 text-white py-12 mt-20">
